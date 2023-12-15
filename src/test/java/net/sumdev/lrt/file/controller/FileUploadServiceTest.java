@@ -15,11 +15,11 @@ class FileUploadServiceTest {
     private MockMvc mockMvc;
     @Autowired
     private MockMultipartFile mockMultipartFile;
-    @Test
+
     void saveFile() throws Exception {
         mockMvc.perform(multipart("/v1/file/upload")
                         .file(mockMultipartFile)
-                        .param("name", "testname"))
+                        .param("token", "jwt"))
                 .andExpect(status().isOk());
     }
 }

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.sumdev.lrt.file.model.FileUpload;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,10 +24,14 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @Slf4j
 @RestController
 public class FileService {
+
+    @Value("${upload.directory:./uploaded/}")
+    private String uploadDirectory;
+
     @GetMapping(value = "/v1/file/get/{fileName}")
     @ResponseBody
     public ResponseEntity<InputStreamResource> getFile(@PathVariable String fileName) throws IOException {
-        File file = new File("./uploaded/"+fileName);
+        File file = new File(uploadDirectory+fileName);
         InputStream in = FileUtils.openInputStream(file);
         MediaType contentType = MediaType.parseMediaType(Files.probeContentType(file.toPath()));
 
@@ -48,13 +53,13 @@ public class FileService {
 
         Arrays.stream(fileUpload.getFile()).forEach(multipartFile -> {
 //            MultipartFile multipartFile = fileUpload.getFile();
-            String savedFile = "./uploaded/"+ Instant.now().getEpochSecond() + "-" + Objects.requireNonNull(multipartFile.getOriginalFilename()).replace(" ", "_").toLowerCase();
+            String savedFile = uploadDirectory+ Instant.now().getEpochSecond() + "-" + Objects.requireNonNull(multipartFile.getOriginalFilename()).replace(" ", "_").toLowerCase();
 
             try {
                 File targetFile = new File(savedFile);
                 log.info("Writing file to {}", targetFile);
                 FileUtils.copyInputStreamToFile(multipartFile.getInputStream(), targetFile);
-                savedFiles.add(savedFile.replace("./uploaded/", ""));
+                savedFiles.add(savedFile.replace(uploadDirectory, ""));
             } catch (IOException e) {
                 log.error(e.getMessage());
                 throw new MultipartException("File not saved");
