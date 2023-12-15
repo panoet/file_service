@@ -6,8 +6,7 @@ import lombok.extern.jackson.Jacksonized;
 import org.springframework.web.multipart.MultipartFile;
 
 @Data
-@Jacksonized
 public class FileUpload {
     private String token;
-    private MultipartFile file;
+    private MultipartFile[] file;
 }

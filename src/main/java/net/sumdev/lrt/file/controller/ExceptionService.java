@@ -23,4 +23,13 @@ public class ExceptionService {
                         "  \"error\": \"No files were uploaded\"\n" +
                         "}");
     }
+
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<String> handleNullException() {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body("{\n" +
+                        "  \"result\": \"error\",\n" +
+                        "  \"error\": \"Something happened\"\n" +
+                        "}");
+    }
 }
